@@ -7,6 +7,7 @@
 
 
 #include <malloc.h>
+#include <mem.h>
 #include "parser.h"
 #include "calculateMatch.h"
 
@@ -14,8 +15,7 @@
  * calculate the location of a node in an array
  */
 #define INDEX(x, y, row) ((x) * (row) + y)
-#define ROW 1
-#define COL 0
+
 /**
  * represents rubiq in the matrix
  * next and prev are there to get the way to get the best match
@@ -66,7 +66,7 @@ static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t co
     }
     for (i = 1; i < colLen; ++i)
     {
-        index = INDEX(i, 0, colLen);
+        index = INDEX(i, 0, rowLen);
         node = &nodeArr[index];
         node->data = gap * i;
         node->row = i;
@@ -116,6 +116,8 @@ void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char col
 
 void printResults(char *seq1Name, char *seq2Name, Node *cell)
 {
+    seq1Name[strlen(seq1Name) -1] = '\0';
+    seq2Name[strlen(seq2Name) -1] = '\0';
     printf("Score for alignment of %s to %s is %d", seq1Name, seq2Name, cell->data);
     Node *head = cell;
     while (head->prev != NULL)
@@ -133,7 +135,6 @@ void printResults(char *seq1Name, char *seq2Name, Node *cell)
 int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLen, size_t colLen,
                    const int gap, const int match, const int misMatch)
 {
-
 //    size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
 //    nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
 //    if (nodeArr == NULL)
@@ -142,10 +143,13 @@ int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLe
 //        return 0;
 //    }
 //    initializeMatrix(nodeArr, rowLen, colLen, gap);
+    printf("    ");
+    for (int k = 0; k < rowLen; k++)
+    {
+        printf("| %c  ", row[k]);
+    }
     size_t i;
     size_t j;
-    printf("    ");
-
     for (i = 1; i < rowLen; i++)
     {
         printf("| %c ", col[i - 1]);
@@ -162,26 +166,25 @@ int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLe
             {
                 printf("|\n");
             }
-
         }
     }
-    printf("\n------------------\n");
-    printf("          ");
-    for (int k = 0; k < rowLen; k++)
-    {
-        printf("| %c  ", row[k]);
-    }
-    printf(" |\n| %c |", col[0]);
-    int x = 1;
-    for (int l = 0; l < rowLen * colLen; l++)
-    {
-        if (l % rowLen == 0 && l != 0)
-        {
-            printf("|\n| %c ", col[x]);
-            x++;
-        }
-        printf("| %d ", nodeArr[l].data);
-    }
+//    printf("\n------------------\n");
+//    printf("          ");
+//    for (int k = 0; k < rowLen; k++)
+//    {
+//        printf("| %c  ", row[k]);
+//    }
+//    printf(" |\n| %c |", col[0]);
+//    int x = 1;
+//    for (int l = 0; l < rowLen * colLen; l++)
+//    {
+//        if (l % rowLen == 0 && l != 0)
+//        {
+//            printf("|\n| %c ", col[x]);
+//            x++;
+//        }
+//        printf("| %d ", nodeArr[l].data);
+//    }
     return 1;
 }
 
@@ -205,11 +208,11 @@ int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int
                 return 0;
             }
             initializeMatrix(nodeArr, rowLen, colLen, gap);
-            int matchScore = calculateMatch(nodeArr, row->sequenceArr, col->sequenceArr,rowLen,
+            calculateMatch(nodeArr, row->sequenceArr, col->sequenceArr,rowLen,
                     colLen, gap, match, misMatch);
             printResults(row->name, col->name, &nodeArr[rowLen*colLen -1]);
 
         }
     }
-
+    return 1;
 }

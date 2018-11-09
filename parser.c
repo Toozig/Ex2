@@ -141,7 +141,7 @@ size_t parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES])
                 freeArr(&seqArr, numOfSeq);
                 return 0;
             }
-            cur->name = malloc(sizeof(char)* strlen(line));
+            cur->name = malloc(sizeof(char)* strlen(line) -1);
             if (cur->name == NULL)
             {
                 freeArr(&seqArr, numOfSeq);
