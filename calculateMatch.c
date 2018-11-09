@@ -31,13 +31,13 @@ typedef struct Node
 } Node;
 
 void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
-        const char rowChar, const char colChar, const char space)
+                const char rowChar, const char colChar, const char space)
 {
     cell->data = grade;
     Node *dad = (Node *) &nodeArr[index];
     dad->next = cell;
     cell->prev = dad;
-    sprintf(cell->print,"%c%c%c", rowChar, space, colChar);
+    sprintf(cell->print, "%c%c%c", rowChar, space, colChar);
 }
 
 
@@ -49,7 +49,7 @@ void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
  * @param gap the gap factor
  * @return  0 if failed, 1 otherwise
  */
-static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t colLen, const int gap)
+static void initializeMatrix(Node nodeArr[], const size_t rowLen, const size_t colLen, const int gap)
 {
     size_t i;
     //initialize row
@@ -96,10 +96,11 @@ void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char col
     if (matchScore >= gapColGrade && matchScore >= gapRowGrade)
     {
         char space;
-        if(doesMatch)
+        if (doesMatch)
         {
             space = '-';
-        }else{
+        } else
+        {
             space = ' ';
         }
         updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col - 1, colLen), matchScore, rowChar, colChar, space);
@@ -107,15 +108,28 @@ void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char col
     }
     if (gapRowGrade >= matchScore && gapRowGrade >= gapColGrade)
     {
-        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col, colLen), gapRowGrade,'|', colChar ,' ' );
+        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col, colLen), gapRowGrade, '|', colChar, ' ');
         return;
     }
     updateCell(cell, nodeArr, INDEX(cell->row, cell->col - 1, colLen), gapColGrade, rowChar, '|', ' ');
 }
 
+void printResults(char *seq1Name, char *seq2Name, Node *cell)
+{
+    printf("Score for alignment of %s to %s is %d", seq1Name, seq2Name, cell->data);
+    Node *head = cell;
+    while (head->prev != NULL)
+    {
+        head = head->prev;
+    }
+    while (head != NULL)
+    {
+        printf("%s\n", head->print);
+    }
+}
 
 int calculateMatch(Node *nodeArr, const Sequence *row, const Sequence *col,
-        const int gap, const int match, const int misMatch)
+                   const int gap, const int match, const int misMatch)
 {
 
     size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
@@ -129,14 +143,10 @@ int calculateMatch(Node *nodeArr, const Sequence *row, const Sequence *col,
     size_t i;
     size_t j;
     printf("    ");
-    for (int k = 0; k < row->seqLen; k++)
-    {
-        printf("| %c ", row->sequenceArr[k]);
-    }
-    printf(" |\n");
+
     for (i = 1; i < rowLen; i++)
     {
-        printf("| %c ", col->sequenceArr[i -1]);
+        printf("| %c ", col->sequenceArr[i - 1]);
         char rowChar = row->sequenceArr[i - 1];
         for (j = 1; j < colLen; j++)
         {
@@ -154,6 +164,22 @@ int calculateMatch(Node *nodeArr, const Sequence *row, const Sequence *col,
         }
     }
     printf("\n------------------\n");
+    printf("          ");
+    for (int k = 0; k < row->seqLen; k++)
+    {
+        printf("| %c  ", row->sequenceArr[k]);
+    }
+    printf(" |\n| %c |", col->sequenceArr[0]);
+    int x = 1;
+    for (int l = 0; l < rowLen * colLen; l++)
+    {
+        if (l % rowLen == 0 && l != 0)
+        {
+            printf("|\n| %c ", col->sequenceArr[x]);
+            x++;
+        }
+        printf("| %d ", nodeArr[l].data);
+    }
     return 1;
 }
 
@@ -176,8 +202,9 @@ int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int
                 fprintf(stderr, "ERROR memory problem");
                 return 0;
             }
-            initializeMatrix(nodeArr, rowLen, colLen, gap);
+            initializeMatrix(&nodeArr, rowLen, colLen, gap);
             int matchScore = calculateMatch(nodeArr, row, col, gap, match, misMatch);
+            printResults(row->name, col->name, &nodeArr[rowLen*colLen -1]);
 
         }
     }
