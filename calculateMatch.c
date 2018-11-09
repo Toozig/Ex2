@@ -8,6 +8,7 @@
 
 #include <malloc.h>
 #include "parser.h"
+#include "calculateMatch.h"
 
 /**
  * calculate the location of a node in an array
@@ -26,6 +27,7 @@ typedef struct Node
     size_t col;
     struct Node *next;
     struct Node *prev;
+    char print[MATCH_RELATION];
 } Node;
 
 void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade)
@@ -34,6 +36,7 @@ void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade)
     Node *dad = (Node *) &nodeArr[index];
     dad->next = cell;
     cell->prev = dad;
+    
 }
 
 
@@ -80,7 +83,7 @@ static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t co
  * @param gapFactor the factor given for gap
  * @param misMatchFactor factor for miss matching
  */
-void calculateCell(Node * cell, Node *nodeArr, const char rowChar, const char colChar,
+void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char colChar,
                    size_t colLen, int matchFactor, int gapFactor, int misMatchFactor)
 {
     int matchScore = rowChar == colChar ? (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + matchFactor) :
@@ -115,16 +118,15 @@ int calculateMatch(const Sequence *row, const Sequence *col, const int gap, cons
     initializeMatrix(nodeArr, rowLen, colLen, gap);
     size_t i;
     size_t j;
-    printf("   ");
-    for (int k = 0; k <row->seqLen ; k++)
+    printf("    ");
+    for (int k = 0; k < row->seqLen; k++)
     {
-        printf("| %c ",row->sequenceArr[k]);
+        printf("| %c ", row->sequenceArr[k]);
     }
     printf(" |\n");
     for (i = 1; i < rowLen; i++)
     {
-        printf("\n| %c ", col->sequenceArr[i]);
-
+        printf("| %c ", col->sequenceArr[i -1]);
         char rowChar = row->sequenceArr[i - 1];
         for (j = 1; j < colLen; j++)
         {
@@ -133,12 +135,15 @@ int calculateMatch(const Sequence *row, const Sequence *col, const int gap, cons
             node->row = i;
             node->col = j;
             calculateCell(node, nodeArr, rowChar, colChar, colLen, match, gap, misMatch);
-            if(j  < colLen){
-                printf("| %d ", node->data);
-            } else{ printf("| %d |\n", node->data);}
+            printf("| %d ", node->data);
+            if (j + 1 == colLen)
+            {
+                printf("|\n");
+            }
+
         }
     }
-    printf("------------------\n");
+    printf("\n------------------\n");
     return 1;
 }
 

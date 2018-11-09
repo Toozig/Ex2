@@ -8,6 +8,8 @@
 
 #define PRINT_CHAR 4
 
+#define MATCH_RELATION 4
+
 int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int misMatch);
 
 #endif //UNTITLED_CALCULATEMATCH_H
