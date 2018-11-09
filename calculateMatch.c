@@ -1,0 +1,160 @@
+//
+// Created by toozi on 08/11/2018.
+//
+
+
+
+
+
+#include <malloc.h>
+#include "parser.h"
+
+/**
+ * calculate the location of a node in an array
+ */
+#define INDEX(x, y, row) ((x) * (row) + y)
+#define ROW 1
+#define COL 0
+/**
+ * represents rubiq in the matrix
+ * next and prev are there to get the way to get the best match
+ */
+typedef struct Node
+{
+    int data;
+    size_t row;
+    size_t col;
+    struct Node *next;
+    struct Node *prev;
+} Node;
+
+void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade)
+{
+    cell->data = grade;
+    Node *dad = (Node *) &nodeArr[index];
+    dad->next = cell;
+    cell->prev = dad;
+}
+
+
+/**
+ * This function initialize matrix  for the match calculation
+ * @param nodeArr the matrix
+ * @param rowLen the length of the row
+ * @param colLen the length of the column
+ * @param gap the gap factor
+ * @return  0 if failed, 1 otherwise
+ */
+static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t colLen, const int gap)
+{
+    size_t i;
+    //initialize row
+    nodeArr[0].data = 0;
+    Node *node;
+    size_t index;
+    for (i = 1; i < rowLen; i++)
+    {
+        index = INDEX(0, i, colLen);
+        node = &nodeArr[index];
+        node->data = gap * i;
+        node->row = 0;
+        node->col = i;
+    }
+    for (i = 1; i < colLen; ++i)
+    {
+        index = INDEX(i, 0, colLen);
+        node = &nodeArr[index];
+        node->data = gap * i;
+        node->row = i;
+        node->col = 0;
+    }
+}
+
+/**
+ * this function calculate the grade for a given cell
+ * @param cell  the cell to grade
+ * @param nodeArr cell's array
+ * @param row the sequence of the row
+ * @param col the sequence of the col
+ * @param matchFactor the factor for matching
+ * @param gapFactor the factor given for gap
+ * @param misMatchFactor factor for miss matching
+ */
+void calculateCell(Node * cell, Node *nodeArr, const char rowChar, const char colChar,
+                   size_t colLen, int matchFactor, int gapFactor, int misMatchFactor)
+{
+    int matchScore = rowChar == colChar ? (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + matchFactor) :
+                     (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + misMatchFactor);
+    int gapRowGrade = nodeArr[INDEX(cell->row - 1, cell->col, colLen)].data + gapFactor;
+    int gapColGrade = nodeArr[INDEX(cell->row, cell->col - 1, colLen)].data + gapFactor;
+
+    if (matchScore >= gapColGrade && matchScore >= gapRowGrade)
+    {
+        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col - 1, colLen), matchScore);
+        return;
+    }
+    if (gapRowGrade >= matchScore && gapRowGrade >= gapColGrade)
+    {
+        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col, colLen), gapRowGrade);
+        return;
+    }
+    updateCell(cell, nodeArr, INDEX(cell->row, cell->col - 1, colLen), gapColGrade);
+}
+
+
+int calculateMatch(const Sequence *row, const Sequence *col, const int gap, const int match, const int misMatch)
+{
+    Node *nodeArr;
+    size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
+    nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
+    if (nodeArr == NULL)
+    {
+        fprintf(stderr, "ERROR memory problem");
+        return 0;
+    }
+    initializeMatrix(nodeArr, rowLen, colLen, gap);
+    size_t i;
+    size_t j;
+    printf("   ");
+    for (int k = 0; k <row->seqLen ; k++)
+    {
+        printf("| %c ",row->sequenceArr[k]);
+    }
+    printf(" |\n");
+    for (i = 1; i < rowLen; i++)
+    {
+        printf("\n| %c ", col->sequenceArr[i]);
+
+        char rowChar = row->sequenceArr[i - 1];
+        for (j = 1; j < colLen; j++)
+        {
+            char colChar = col->sequenceArr[j - 1];
+            Node *node = &nodeArr[INDEX(i, j, colLen)];
+            node->row = i;
+            node->col = j;
+            calculateCell(node, nodeArr, rowChar, colChar, colLen, match, gap, misMatch);
+            if(j  < colLen){
+                printf("| %d ", node->data);
+            } else{ printf("| %d |\n", node->data);}
+        }
+    }
+    printf("------------------\n");
+    return 1;
+}
+
+int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int misMatch)
+{
+    size_t i;
+    size_t j;
+    for (i = 0; i < numOfSeq - 1; i++)
+    {
+        Sequence *row = &seqArr[i];
+        for (j = i + 1; j < numOfSeq; j++)
+        {
+            Sequence *col = &seqArr[j];
+            int matchScore = calculateMatch(row, col, gap, match, misMatch);
+
+        }
+    }
+
+}

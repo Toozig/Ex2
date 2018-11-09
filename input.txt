@@ -1,0 +1,5 @@
+>seq1
+GCATGCU
+>seq2
+GATTACA
+
