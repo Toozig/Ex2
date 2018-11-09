@@ -49,7 +49,7 @@ void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
  * @param gap the gap factor
  * @return  0 if failed, 1 otherwise
  */
-static void initializeMatrix(Node nodeArr[], const size_t rowLen, const size_t colLen, const int gap)
+static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t colLen, const int gap)
 {
     size_t i;
     //initialize row
@@ -202,7 +202,7 @@ int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int
                 fprintf(stderr, "ERROR memory problem");
                 return 0;
             }
-            initializeMatrix(&nodeArr, rowLen, colLen, gap);
+            initializeMatrix(nodeArr, rowLen, colLen, gap);
             int matchScore = calculateMatch(nodeArr, row, col, gap, match, misMatch);
             printResults(row->name, col->name, &nodeArr[rowLen*colLen -1]);
 
