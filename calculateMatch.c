@@ -30,13 +30,14 @@ typedef struct Node
     char print[MATCH_RELATION];
 } Node;
 
-void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade)
+void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
+        const char rowChar, const char colChar, const char space)
 {
     cell->data = grade;
     Node *dad = (Node *) &nodeArr[index];
     dad->next = cell;
     cell->prev = dad;
-    
+    sprintf(cell->print,"%c%c%c", rowChar, space, colChar);
 }
 
 
@@ -86,28 +87,37 @@ static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t co
 void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char colChar,
                    size_t colLen, int matchFactor, int gapFactor, int misMatchFactor)
 {
-    int matchScore = rowChar == colChar ? (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + matchFactor) :
+    int doesMatch = rowChar == colChar;
+    int matchScore = doesMatch ? (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + matchFactor) :
                      (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + misMatchFactor);
     int gapRowGrade = nodeArr[INDEX(cell->row - 1, cell->col, colLen)].data + gapFactor;
     int gapColGrade = nodeArr[INDEX(cell->row, cell->col - 1, colLen)].data + gapFactor;
 
     if (matchScore >= gapColGrade && matchScore >= gapRowGrade)
     {
-        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col - 1, colLen), matchScore);
+        char space;
+        if(doesMatch)
+        {
+            space = '-';
+        }else{
+            space = ' ';
+        }
+        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col - 1, colLen), matchScore, rowChar, colChar, space);
         return;
     }
     if (gapRowGrade >= matchScore && gapRowGrade >= gapColGrade)
     {
-        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col, colLen), gapRowGrade);
+        updateCell(cell, nodeArr, INDEX(cell->row - 1, cell->col, colLen), gapRowGrade,'|', colChar ,' ' );
         return;
     }
-    updateCell(cell, nodeArr, INDEX(cell->row, cell->col - 1, colLen), gapColGrade);
+    updateCell(cell, nodeArr, INDEX(cell->row, cell->col - 1, colLen), gapColGrade, rowChar, '|', ' ');
 }
 
 
-int calculateMatch(const Sequence *row, const Sequence *col, const int gap, const int match, const int misMatch)
+int calculateMatch(Node *nodeArr, const Sequence *row, const Sequence *col,
+        const int gap, const int match, const int misMatch)
 {
-    Node *nodeArr;
+
     size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
     nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
     if (nodeArr == NULL)
@@ -149,6 +159,7 @@ int calculateMatch(const Sequence *row, const Sequence *col, const int gap, cons
 
 int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int misMatch)
 {
+
     size_t i;
     size_t j;
     for (i = 0; i < numOfSeq - 1; i++)
@@ -157,7 +168,16 @@ int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int
         for (j = i + 1; j < numOfSeq; j++)
         {
             Sequence *col = &seqArr[j];
-            int matchScore = calculateMatch(row, col, gap, match, misMatch);
+            Node *nodeArr;
+            size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
+            nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
+            if (nodeArr == NULL)
+            {
+                fprintf(stderr, "ERROR memory problem");
+                return 0;
+            }
+            initializeMatrix(nodeArr, rowLen, colLen, gap);
+            int matchScore = calculateMatch(nodeArr, row, col, gap, match, misMatch);
 
         }
     }
