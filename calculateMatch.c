@@ -120,37 +120,39 @@ void printResults(char *seq1Name, char *seq2Name, Node *cell)
     Node *head = cell;
     while (head->prev != NULL)
     {
+        head->prev->next = head;
         head = head->prev;
     }
     while (head != NULL)
     {
         printf("%s\n", head->print);
+        head = head->next;
     }
 }
 
-int calculateMatch(Node *nodeArr, const Sequence *row, const Sequence *col,
+int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLen, size_t colLen,
                    const int gap, const int match, const int misMatch)
 {
 
-    size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
-    nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
-    if (nodeArr == NULL)
-    {
-        fprintf(stderr, "ERROR memory problem");
-        return 0;
-    }
-    initializeMatrix(nodeArr, rowLen, colLen, gap);
+//    size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
+//    nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
+//    if (nodeArr == NULL)
+//    {
+//        fprintf(stderr, "ERROR memory problem");
+//        return 0;
+//    }
+//    initializeMatrix(nodeArr, rowLen, colLen, gap);
     size_t i;
     size_t j;
     printf("    ");
 
     for (i = 1; i < rowLen; i++)
     {
-        printf("| %c ", col->sequenceArr[i - 1]);
-        char rowChar = row->sequenceArr[i - 1];
+        printf("| %c ", col[i - 1]);
+        char rowChar = row[i - 1];
         for (j = 1; j < colLen; j++)
         {
-            char colChar = col->sequenceArr[j - 1];
+            char colChar = col[j - 1];
             Node *node = &nodeArr[INDEX(i, j, colLen)];
             node->row = i;
             node->col = j;
@@ -165,17 +167,17 @@ int calculateMatch(Node *nodeArr, const Sequence *row, const Sequence *col,
     }
     printf("\n------------------\n");
     printf("          ");
-    for (int k = 0; k < row->seqLen; k++)
+    for (int k = 0; k < rowLen; k++)
     {
-        printf("| %c  ", row->sequenceArr[k]);
+        printf("| %c  ", row[k]);
     }
-    printf(" |\n| %c |", col->sequenceArr[0]);
+    printf(" |\n| %c |", col[0]);
     int x = 1;
     for (int l = 0; l < rowLen * colLen; l++)
     {
         if (l % rowLen == 0 && l != 0)
         {
-            printf("|\n| %c ", col->sequenceArr[x]);
+            printf("|\n| %c ", col[x]);
             x++;
         }
         printf("| %d ", nodeArr[l].data);
@@ -203,7 +205,8 @@ int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int
                 return 0;
             }
             initializeMatrix(nodeArr, rowLen, colLen, gap);
-            int matchScore = calculateMatch(nodeArr, row, col, gap, match, misMatch);
+            int matchScore = calculateMatch(nodeArr, row->sequenceArr, col->sequenceArr,rowLen,
+                    colLen, gap, match, misMatch);
             printResults(row->name, col->name, &nodeArr[rowLen*colLen -1]);
 
         }
