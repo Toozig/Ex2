@@ -35,7 +35,7 @@ void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
 {
     cell->data = grade;
     Node *dad = (Node *) &nodeArr[index];
-    dad->next = cell;
+    dad->next = cell; //todo check if we can delete this line
     cell->prev = dad;
     sprintf(cell->print, "%c%c%c", rowChar, space, colChar);
 }
@@ -88,6 +88,7 @@ void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char col
                    size_t colLen, int matchFactor, int gapFactor, int misMatchFactor)
 {
     int doesMatch = rowChar == colChar;
+    //calculate the 3 grades
     int matchScore = doesMatch ? (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + matchFactor) :
                      (nodeArr[INDEX(cell->row - 1, cell->col - 1, colLen)].data + misMatchFactor);
     int gapRowGrade = nodeArr[INDEX(cell->row - 1, cell->col, colLen)].data + gapFactor;
@@ -135,14 +136,6 @@ void printResults(char *seq1Name, char *seq2Name, Node *cell)
 int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLen, size_t colLen,
                    const int gap, const int match, const int misMatch)
 {
-//    size_t rowLen = row->seqLen + 1, colLen = col->seqLen + 1;
-//    nodeArr = (Node *) calloc(colLen * rowLen, sizeof(Node));
-//    if (nodeArr == NULL)
-//    {
-//        fprintf(stderr, "ERROR memory problem");
-//        return 0;
-//    }
-//    initializeMatrix(nodeArr, rowLen, colLen, gap);
     printf("    ");
     for (int k = 0; k < rowLen; k++)
     {
@@ -168,23 +161,6 @@ int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLe
             }
         }
     }
-//    printf("\n------------------\n");
-//    printf("          ");
-//    for (int k = 0; k < rowLen; k++)
-//    {
-//        printf("| %c  ", row[k]);
-//    }
-//    printf(" |\n| %c |", col[0]);
-//    int x = 1;
-//    for (int l = 0; l < rowLen * colLen; l++)
-//    {
-//        if (l % rowLen == 0 && l != 0)
-//        {
-//            printf("|\n| %c ", col[x]);
-//            x++;
-//        }
-//        printf("| %d ", nodeArr[l].data);
-//    }
     return 1;
 }
 

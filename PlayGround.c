@@ -35,20 +35,20 @@ void decode(char *text)
 
 int main()
 {
-//    Sequence seqArr[MAX_SEQUENCES];
-//    size_t numOfSeq = parseFile("input.txt", seqArr);
-//    calculateMatches(seqArr,numOfSeq,-1,1,-1);
+    Sequence seqArr[MAX_SEQUENCES];
+    size_t numOfSeq = parseFile("input.txt", seqArr);
+    calculateMatches(seqArr,numOfSeq,-1,1,-1);
 
 
-    int a;
-    scanf("%d\n", &a);
-    char *b = (char *) malloc(sizeof(char)*a + 1);
-    fgets(b, a+1, stdin);
-    int i;
-    for(i = a-1;  i >= 0; i--)
-    {
-        printf("%c", b[i]);
-    }
+//    int a;
+//    scanf("%d\n", &a);
+//    char *b = (char *) malloc(sizeof(char)*a + 1);
+//    fgets(b, a+1, stdin);
+//    int i;
+//    for(i = a-1;  i >= 0; i--)
+//    {
+//        printf("%c", b[i]);
+//    }
 }
 
 
