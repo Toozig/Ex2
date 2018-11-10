@@ -211,7 +211,7 @@ int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int
             calculateMatch(nodeArr, row->sequenceArr, col->sequenceArr,rowLen,
                     colLen, gap, match, misMatch);
             printResults(row->name, col->name, &nodeArr[rowLen*colLen -1]);
-
+            free(nodeArr);
         }
     }
     return 1;

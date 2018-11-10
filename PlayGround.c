@@ -5,60 +5,32 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <mem.h>
+//#include <wsman.h>
 //#include <dxtmpl.h>
 #include "parser.h"
 #include "calculateMatch.h"
 
-typedef struct Node
+void decode(char *text)
 {
-    int data;
-    struct Node* next;
-} Node;
-
-Node *head = NULL;
-
-void deleteAlt()
-{
-    Node *tmp;
-    Node *cur = head;
-    while(cur != NULL)
+    int a = 0;
+    int i;
+    for(i=0; i < strlen(text); i++)
     {
-        tmp = cur->next;
-        cur->next = tmp->next;
-        free(tmp);
-        cur = cur->next;
+        if((int) (text[i] -'0') > 9)
+        {
+            printf("%c", text[i]);
+        }else{
+            while((int) (text[i] - '0') <10){
+                a = a*10 + (int) (text[i] - '0');
+                i++;
+            }
+            while( a != 0)
+            {
+                printf("%c",text[i]);
+                a--;
+            }
+        }
     }
-}
-
-void push(int new_data)
-{
-    Node* new_node = (Node*) malloc(sizeof(Node));
-    new_node->data  = new_data;
-    new_node->next = head;
-    head = new_node;
-}
-
-void printList()
-{
-    Node *temp = head;
-    while(temp != NULL)
-    {
-        printf("%d ", temp->data);
-        temp = temp->next;
-    }
-    printf("\n");
-}
-
-void deleteList()
-{
-    Node *temp = head;
-    while(temp != NULL)
-    {
-        Node *next = temp->next;
-        free(temp);
-        temp = next;
-    }
-    head = NULL;
 }
 
 int main()
@@ -66,18 +38,18 @@ int main()
 //    Sequence seqArr[MAX_SEQUENCES];
 //    size_t numOfSeq = parseFile("input.txt", seqArr);
 //    calculateMatches(seqArr,numOfSeq,-1,1,-1);
-    push(1);
-    push(2);
-    push(3);
-    push(4);
-    printList();
-    deleteAlt();
-    printList();
-    deleteList();
 
 
-
+    int a;
+    scanf("%d\n", &a);
+    char *b = (char *) malloc(sizeof(char)*a + 1);
+    fgets(b, a+1, stdin);
+    int i;
+    for(i = a-1;  i >= 0; i--)
+    {
+        printf("%c", b[i]);
     }
+}
 
 
 
