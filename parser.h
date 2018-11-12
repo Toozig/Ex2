@@ -28,6 +28,6 @@ typedef struct
 } Sequence;
 
 
-size_t parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES]);
+int parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES]);
 
 #endif //UNTITLED_PARSER_H

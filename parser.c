@@ -102,9 +102,9 @@ static int sizeDownArr(Sequence* sequence){
  * This function  parse a fle of sequnce and convert it into an array of sequnces
  * @param fileName the name of the file
  * @param seqArr  the array which the sequnces will be put into
- * @return 0 if failed or no sequence were read, the number of sequences otherwise
+ * @return -1 if failed otherwise- the number of sequences otherwise
  */
-size_t parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES])
+int parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES])
 {
     FILE *file = NULL;
     file = fopen(fileName, "r");
@@ -112,7 +112,7 @@ size_t parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES])
     if (file == NULL)
     {
         fprintf(stderr, "Error opening file: %s\n", fileName);
-        return 0;
+        return -1;
     }
     Sequence *cur = NULL;
     size_t numOfSeq = 0;
@@ -131,7 +131,6 @@ size_t parseFile(char fileName[], Sequence seqArr[MAX_SEQUENCES])
                     free(cur);
                     return 0;
                 }
-
                 seqArr[numOfSeq] = *cur;
                 numOfSeq++;
             }

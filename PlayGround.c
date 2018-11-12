@@ -33,13 +33,13 @@ void decode(char *text)
     }
 }
 
-int main()
-{
-    Sequence seqArr[MAX_SEQUENCES];
-    size_t numOfSeq = parseFile("input.txt", seqArr);
-    calculateMatches(seqArr,numOfSeq,-1,1,-1);
-
-
+////int main()
+//{
+//    Sequence seqArr[MAX_SEQUENCES];
+//    size_t numOfSeq = parseFile("input.txt", seqArr);
+//    calculateMatches(seqArr,numOfSeq,-1,1,-1);
+//
+//    int a;11111
 //    int a;
 //    scanf("%d\n", &a);
 //    char *b = (char *) malloc(sizeof(char)*a + 1);
@@ -49,7 +49,7 @@ int main()
 //    {
 //        printf("%c", b[i]);
 //    }
-}
+//}
 
 
 

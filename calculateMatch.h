@@ -6,10 +6,9 @@
 #ifndef UNTITLED_CALCULATEMATCH_H
 #define UNTITLED_CALCULATEMATCH_H
 
-#define PRINT_CHAR 4
 
 #define MATCH_RELATION 4
 
-int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int misMatch);
+int calculateMatches(Sequence seqArr[], int numOfSeq, int gap, int match, int misMatch);
 
 #endif //UNTITLED_CALCULATEMATCH_H

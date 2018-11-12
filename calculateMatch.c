@@ -30,7 +30,7 @@ typedef struct Node
     char print[MATCH_RELATION];
 } Node;
 
-void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
+static void updateCell(Node *cell, const Node *nodeArr, size_t index, int grade,
                 const char rowChar, const char colChar, const char space)
 {
     cell->data = grade;
@@ -84,7 +84,7 @@ static void initializeMatrix(Node *nodeArr, const size_t rowLen, const size_t co
  * @param gapFactor the factor given for gap
  * @param misMatchFactor factor for miss matching
  */
-void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char colChar,
+ static void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char colChar,
                    size_t colLen, int matchFactor, int gapFactor, int misMatchFactor)
 {
     int doesMatch = rowChar == colChar;
@@ -115,7 +115,10 @@ void calculateCell(Node *cell, Node *nodeArr, const char rowChar, const char col
     updateCell(cell, nodeArr, INDEX(cell->row, cell->col - 1, colLen), gapColGrade, rowChar, '|', ' ');
 }
 
-void printResults(char *seq1Name, char *seq2Name, Node *cell)
+/**
+ * the function prints the result of the match to the screen.
+ */
+static void printResults(char *seq1Name, char *seq2Name, Node *cell)
 {
     seq1Name[strlen(seq1Name) -1] = '\0';
     seq2Name[strlen(seq2Name) -1] = '\0';
@@ -133,7 +136,7 @@ void printResults(char *seq1Name, char *seq2Name, Node *cell)
     }
 }
 
-int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLen, size_t colLen,
+static int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLen, size_t colLen,
                    const int gap, const int match, const int misMatch)
 {
     printf("    ");
@@ -164,7 +167,7 @@ int calculateMatch(Node *nodeArr, const char *row, const char *col, size_t rowLe
     return 1;
 }
 
-int calculateMatches(Sequence seqArr[], size_t numOfSeq, int gap, int match, int misMatch)
+int calculateMatches(Sequence seqArr[], int numOfSeq, int gap, int match, int misMatch)
 {
 
     size_t i;
